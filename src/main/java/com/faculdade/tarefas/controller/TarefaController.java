@@ -14,6 +14,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/tarefas")
+@CrossOrigin(origins = "http://localhost:4200")
 public class TarefaController {
 
     private final TarefaService service;
