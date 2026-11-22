@@ -6,6 +6,7 @@ import com.faculdade.tarefas.decorator.OperacaoBasica;
 import com.faculdade.tarefas.decorator.OperacaoTarefa;
 import com.faculdade.tarefas.memento.HistoricoTarefa;
 import com.faculdade.tarefas.memento.MementoTarefa;
+import com.faculdade.tarefas.model.Status;
 import com.faculdade.tarefas.model.Tarefa;
 import com.faculdade.tarefas.repository.TarefaRepository;
 import org.springframework.http.HttpStatus;
@@ -100,13 +101,28 @@ public class TarefaService {
     public String executar(Long id, boolean email, boolean log) {
         Tarefa tarefa = buscar(id);
 
-        OperacaoTarefa operacao = new OperacaoBasica();   // objeto original
+        if (tarefa.getStatus() == Status.CONCLUIDA) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "A tarefa já está concluída"
+            );
+        }
+
+        OperacaoTarefa operacao = new OperacaoBasica();
+
         if (email) {
-            operacao = new DecoratorEmail(operacao);      // embrulha com e-mail
+            operacao = new DecoratorEmail(operacao);
         }
+
         if (log) {
-            operacao = new DecoratorLog(operacao);        // embrulha com log
+            operacao = new DecoratorLog(operacao);
         }
-        return operacao.executar(tarefa);
+
+        String resultado = operacao.executar(tarefa);
+
+        tarefa.setStatus(Status.CONCLUIDA);
+        repository.save(tarefa);
+
+        return resultado;
     }
 }
