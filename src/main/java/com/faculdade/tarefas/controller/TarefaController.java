@@ -1,5 +1,6 @@
 package com.faculdade.tarefas.controller;
 
+import com.faculdade.tarefas.dto.ExecucaoTarefaResponse;
 import com.faculdade.tarefas.model.Tarefa;
 import com.faculdade.tarefas.service.TarefaService;
 import org.springframework.http.HttpStatus;
@@ -67,9 +68,9 @@ public class TarefaController {
     // ===================== DECORATOR =====================
 
     @PostMapping("/{id}/executar")
-    public Map<String, String> executar(@PathVariable Long id,
-                                        @RequestParam(defaultValue = "false") boolean email,
-                                        @RequestParam(defaultValue = "false") boolean log) {
-        return Map.of("resultado", service.executar(id, email, log));
+    public ExecucaoTarefaResponse executar(@PathVariable Long id,
+                                           @RequestParam(defaultValue = "false") boolean email,
+                                           @RequestParam(defaultValue = "false") boolean log) {
+        return service.executar(id, email, log);
     }
 }

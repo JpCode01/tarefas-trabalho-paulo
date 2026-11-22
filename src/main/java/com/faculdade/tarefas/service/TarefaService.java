@@ -4,6 +4,7 @@ import com.faculdade.tarefas.decorator.DecoratorEmail;
 import com.faculdade.tarefas.decorator.DecoratorLog;
 import com.faculdade.tarefas.decorator.OperacaoBasica;
 import com.faculdade.tarefas.decorator.OperacaoTarefa;
+import com.faculdade.tarefas.dto.ExecucaoTarefaResponse;
 import com.faculdade.tarefas.memento.HistoricoTarefa;
 import com.faculdade.tarefas.memento.MementoTarefa;
 import com.faculdade.tarefas.model.Status;
@@ -98,7 +99,7 @@ public class TarefaService {
     // ===================== DECORATOR =====================
 
     /** Começa com a operação original e "embrulha" com os decorators pedidos. */
-    public String executar(Long id, boolean email, boolean log) {
+    public ExecucaoTarefaResponse executar(Long id, boolean email, boolean log) {
         Tarefa tarefa = buscar(id);
 
         if (tarefa.getStatus() == Status.CONCLUIDA) {
@@ -121,8 +122,8 @@ public class TarefaService {
         String resultado = operacao.executar(tarefa);
 
         tarefa.setStatus(Status.CONCLUIDA);
-        repository.save(tarefa);
+        Tarefa tarefaAtualizada = repository.save(tarefa);
 
-        return resultado;
+        return new ExecucaoTarefaResponse(resultado, tarefaAtualizada);
     }
 }
